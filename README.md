@@ -1,16 +1,11 @@
-[![Tests](../../actions/workflows/tests-13-sprint.yml/badge.svg)](../../actions/workflows/tests-13-sprint.yml) [![Tests](../../actions/workflows/tests-14-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml)
-# Проект Mesto фронтенд + бэкенд
+# Rest Api Mesto
+-----
+#### Этот проект является Rest Api для взаимодействия с фронтенд частью проекта Mesto.
+-----
+#### В этом проекте используются следующие технологии: 
+1. **Node.Js**
+2. **Express**
+3. **Body-parser**
+-----
 
-
-## Директории
-
-`/routes` — папка с файлами роутера  
-`/controllers` — папка с файлами контроллеров пользователя и карточки   
-`/models` — папка с файлами описания схем пользователя и карточки  
-  
-Остальные директории вспомогательные, создаются при необходимости разработчиком
-
-## Запуск проекта
-
-`npm run start` — запускает сервер   
-`npm run dev` — запускает сервер с hot-reload
+**Ссылка проекта на GitHub: https://github.com/kakoytopux/express-mesto-gha**
