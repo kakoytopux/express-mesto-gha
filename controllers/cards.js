@@ -38,10 +38,16 @@ module.exports.deleteCard = (req, res) => {
   getJsonHeader(res);
 
   Card.findByIdAndDelete(req.params.cardId)
-    .then((card) => res.send({ card }))
+    .then((card) => {
+      if (card === null) {
+        res.status(errCodeNotFound).send({ message: 'Карточка с указанным _id не найдена.' });
+        return;
+      }
+      res.send({ card });
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(errCodeNotFound).send({ message: 'Карточка с указанным _id не найдена.' });
+        res.status(errCodeIncorrectData).send({ message: 'Карточка с указанным _id не найдена.' });
         return;
       }
       errByDefault(res);

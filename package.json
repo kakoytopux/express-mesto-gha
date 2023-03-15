@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "PORT=3000 && node app.js",
-    "dev": "SET PORT=3000 && nodemon app.js",
+    "dev": "PORT=3000 && nodemon app.js",
     "lint": "npx eslint ."
   },
   "author": "puxichhh",
