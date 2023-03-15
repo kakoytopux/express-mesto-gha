@@ -1,10 +1,11 @@
 const Card = require('../models/card');
+const {
+  errCodeNotFound, errCodeMain, errCodeIncorrectData,
+} = require('../utils/const');
+const {
+  getJsonHeader,
+} = require('../utils/utils');
 
-const errCodeMain = 500;
-const errCodeNotFound = 404;
-const errCodeIncorrectData = 400;
-
-const getJsonHeader = (res) => res.header('Content-Type', 'application/json');
 const errByDefault = (res) => res.status(errCodeMain).send({ message: 'Внутренняя ошибка!' });
 
 module.exports.getCards = (req, res) => {
