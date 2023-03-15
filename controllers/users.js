@@ -60,9 +60,17 @@ module.exports.updateProfile = (req, res) => {
 
   const { name, about } = req.body;
 
-  if (name.length < 2 || name.length > 30 || about.length < 2 || about.length > 30) {
-    res.status(errCodeIncorrectData).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
-    return;
+  if (name) {
+    if (name.length < 2 || name.length > 30) {
+      res.status(errCodeIncorrectData).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
+      return;
+    }
+  }
+  if (about) {
+    if (about.length < 2 || about.length > 30) {
+      res.status(errCodeIncorrectData).send({ message: 'Переданы некорректные данные при обновлении профиля.' });
+      return;
+    }
   }
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
