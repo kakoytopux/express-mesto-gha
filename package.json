@@ -5,19 +5,24 @@
   "main": "app.js",
   "scripts": {
     "start": "PORT=3000 && node app.js",
-    "dev": "PORT=3000 && nodemon app.js",
+    "dev": "SET PORT=3000 && nodemon app.js",
     "lint": "npx eslint ."
   },
   "author": "puxichhh",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "celebrate": "^15.0.1",
     "express": "^4.18.2",
-    "mongoose": "^7.0.1"
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.1",
+    "validator": "^13.9.0"
   },
   "devDependencies": {
     "eslint": "^8.36.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.27.5",
     "nodemon": "^2.0.21"
-  }
+  },
+  "keywords": []
 }

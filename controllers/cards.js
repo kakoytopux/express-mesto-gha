@@ -1,6 +1,6 @@
 const Card = require('../models/card');
 const {
-  errCodeNotFound, errCodeMain, errCodeIncorrectData,
+  errCodeNotFound, errCodeMain, errCodeIncorrectData, errCodeUnauthorized
 } = require('../utils/const');
 const {
   getJsonHeader,
@@ -44,6 +44,11 @@ module.exports.deleteCard = (req, res) => {
         res.status(errCodeNotFound).send({ message: 'Карточка с указанным _id не найдена.' });
         return;
       }
+      if (card.owner != req.user._id) {
+        res.status(errCodeUnauthorized).send({ message: 'Нет прав на удаление карточки.' });
+        return;
+      }
+
       res.send({ card });
     })
     .catch((err) => {

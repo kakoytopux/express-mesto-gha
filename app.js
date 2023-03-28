@@ -1,5 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const { celebrate, Joi } = require('celebrate');
+const { errCodeNotFound } = require('./utils/const');
+const { login } = require('./controllers/login');
+const { createUser } = require('./controllers/users');
+const auth = require('./middlewares/auth');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -8,18 +13,32 @@ app.use(express.json());
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '64113f1c86af1cfdc77aaa7b',
-  };
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
+  })
+}), login);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
+  })
+}), createUser);
 
-  next();
-});
+app.use(auth);
+
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
 app.use('*', (req, res) => {
-  res.status(404).send({ message: 'Неверный запрос.' });
+  res.status(errCodeNotFound).send({ message: 'Неверный запрос.' });
 });
+
+// app.use((err, req, res, next) => {
+//   res.status(err.statusCode).send({ message: err.message });
+// });
 
 app.listen(PORT);
