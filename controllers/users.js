@@ -65,7 +65,12 @@ module.exports.createUser = (req, res) => {
           message: 'Переданы некорректные данные при создании пользователя.',
         });
         return;
-      }
+      } else if (err.code === 11000) {
+        res.status(errCodeIncorrectData).send({
+          message: 'Такой email уже используется.',
+        });
+        return;
+      } 
 
       errByDefault(res);
     });

@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const { celebrate, Joi } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
 const { errCodeNotFound } = require('./utils/const');
 const { login } = require('./controllers/login');
 const { createUser } = require('./controllers/users');
@@ -21,8 +21,9 @@ app.post('/signin', celebrate({
 }), login);
 app.post('/signup', celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
+    name: Joi.string().min(2).max(30).default('Жак-Ив Кусто'),
+    about: Joi.string().min(2).max(30).default('Исследователь'),
+    avatar: Joi.string().default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png'),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
   })
@@ -37,8 +38,10 @@ app.use('*', (req, res) => {
   res.status(errCodeNotFound).send({ message: 'Неверный запрос.' });
 });
 
-// app.use((err, req, res, next) => {
-//   res.status(err.statusCode).send({ message: err.message });
-// });
+app.use(errors());
+
+app.use((err, req, res, next) => {
+  res.status(err.statusCode).send({ message: err.message });
+});
 
 app.listen(PORT);
