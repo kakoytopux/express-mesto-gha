@@ -4,35 +4,28 @@ const errCodeNotFound = require('../errors/errCodeNotFound');
 const errCodeIncorrectData = require('../errors/errCodeIncorrectData');
 const errCodeMain = require('../errors/errCodeMain');
 const errCodeConflict = require('../errors/errCodeConflict');
-const {
-  getJsonHeader,
-} = require('../utils/utils');
 
 const errByDefault = () => new errCodeMain('Внутренняя ошибка!');
 
 module.exports.getUsers = (req, res, next) => {
-  getJsonHeader(res);
-
   User.find()
     .then((users) => res.send({ users }))
     .catch(() => next(errByDefault()));
 };
 
 module.exports.getUserId = (req, res, next) => {
-  getJsonHeader(res);
-
   User.findById(req.params.userId)
     .then((user) => {
       if (user === null) {
-        next(new errCodeNotFound('Пользователь с указанным _id не найден.'));
+        next(new errCodeNotFound('Запрашиваемый пользователь не найден.'));
         return;
       }
-      
+
       res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new errCodeIncorrectData('Запрашиваемый пользователь не найден.'));
+        next(new errCodeIncorrectData('Пользователь с указанным _id не найден.'));
         return;
       }
 
@@ -41,16 +34,12 @@ module.exports.getUserId = (req, res, next) => {
 };
 
 module.exports.getUserMe = (req, res, next) => {
-  getJsonHeader(res);
-
   User.findById(req.user._id)
-  .then((user) => res.send({ data: user }))
-  .catch(() => next(errByDefault()));
+    .then((user) => res.send({ data: user }))
+    .catch(() => next(errByDefault()));
 };
 
 module.exports.createUser = (req, res, next) => {
-  getJsonHeader(res);
-
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -60,36 +49,37 @@ module.exports.createUser = (req, res, next) => {
       name, about, avatar, email, password: hash,
     }))
     .then((user) => {
-      const { name, about, avatar, email, _id } = user;
-      
+      const {
+        // eslint-disable-next-line no-shadow
+        name, about, avatar, email, _id,
+      } = user;
+
       res.send({
         user: {
-          name, about, avatar, email, _id
-        }
+          name, about, avatar, email, _id,
+        },
       });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new errCodeIncorrectData('Переданы некорректные данные при создании пользователя.'));
         return;
-      } else if (err.code === 11000) {
+      } if (err.code === 11000) {
         next(new errCodeConflict('Такой email уже используется.'));
         return;
-      } 
+      }
 
       next(errByDefault());
     });
 };
 
 module.exports.updateProfile = (req, res, next) => {
-  getJsonHeader(res);
-
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (user === null) {
-        next(new errCodeNotFound('Пользователь с указанным _id не найден.'));
+        next(new errCodeNotFound('Запрашиваемый пользователь не найден.'));
         return;
       }
 
@@ -106,14 +96,12 @@ module.exports.updateProfile = (req, res, next) => {
 };
 
 module.exports.updateAvatar = (req, res, next) => {
-  getJsonHeader(res);
-
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       if (user === null) {
-        next(new errCodeNotFound('Пользователь с указанным _id не найден.'));
+        next(new errCodeNotFound('Запрашиваемый пользователь не найден.'));
         return;
       }
 
