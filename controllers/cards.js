@@ -1,22 +1,23 @@
 const Card = require('../models/card');
-const {
-  errCodeNotFound, errCodeMain, errCodeIncorrectData, errCodeUnauthorized
-} = require('../utils/const');
+const errCodeNotFound = require('../errors/errCodeNotFound');
+const errCodeIncorrectData = require('../errors/errCodeIncorrectData');
+const errCodeMain = require('../errors/errCodeMain');
+const errCodeForbidden = require('../errors/errCodeForbidden');
 const {
   getJsonHeader,
 } = require('../utils/utils');
 
-const errByDefault = (res) => res.status(errCodeMain).send({ message: 'Внутренняя ошибка!' });
+const errByDefault = () => new errCodeMain('Внутренняя ошибка!');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   getJsonHeader(res);
 
   Card.find()
     .then((cards) => res.send({ cards }))
-    .catch(() => errByDefault(res));
+    .catch(() => next(errByDefault()));
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   getJsonHeader(res);
 
   const { name, link } = req.body;
@@ -25,27 +26,25 @@ module.exports.createCard = (req, res) => {
     .then((card) => res.send({ card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(errCodeIncorrectData).send({
-          message: 'Переданы некорректные данные при создании карточки.',
-        });
+        next(new errCodeIncorrectData('Переданы некорректные данные при создании карточки.'));
         return;
       }
 
-      errByDefault(res);
+      next(errByDefault());
     });
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   getJsonHeader(res);
 
   Card.findByIdAndDelete(req.params.cardId)
     .then((card) => {
       if (card === null) {
-        res.status(errCodeNotFound).send({ message: 'Карточка с указанным _id не найдена.' });
+        next(new errCodeNotFound('Карточка с указанным _id не найдена.'));
         return;
       }
       if (card.owner != req.user._id) {
-        res.status(errCodeUnauthorized).send({ message: 'Нет прав на удаление карточки.' });
+        next(new errCodeForbidden('Нет прав на удаление карточки.'));
         return;
       }
 
@@ -53,51 +52,53 @@ module.exports.deleteCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(errCodeIncorrectData).send({ message: 'Карточка с указанным _id не найдена.' });
+        next(new errCodeIncorrectData('Карточка с указанным _id не найдена.'));
         return;
       }
-      errByDefault(res);
+      
+      next(errByDefault());
     });
 };
 
-module.exports.setLike = (req, res) => {
+module.exports.setLike = (req, res, next) => {
   getJsonHeader(res);
 
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (card === null) {
-        res.status(errCodeNotFound).send({ message: 'Карточка с указанным _id не найдена.' });
+        next(new errCodeNotFound('Карточка с указанным _id не найдена.'));
         return;
       }
       res.send({ card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(errCodeIncorrectData).send({ message: 'Передан несуществующий _id карточки.' });
+        next(new errCodeIncorrectData('Передан несуществующий _id карточки.'));
         return;
       }
 
-      errByDefault(res);
+      next(errByDefault());
     });
 };
 
-module.exports.deleteLike = (req, res) => {
+module.exports.deleteLike = (req, res, next) => {
   getJsonHeader(res);
 
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (card === null) {
-        res.status(errCodeNotFound).send({ message: 'Карточка с указанным _id не найдена.' });
+        next(new errCodeNotFound('Карточка с указанным _id не найдена.'));
         return;
       }
+
       res.send({ card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(errCodeIncorrectData).send({ message: 'Передан несуществующий _id карточки.' });
+        next(new errCodeIncorrectData('Передан несуществующий _id карточки.'));
         return;
       }
 
-      errByDefault(res);
+      next(errByDefault());
     });
 };
