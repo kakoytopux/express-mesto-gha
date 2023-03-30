@@ -17,7 +17,7 @@ module.exports.getUserId = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (user === null) {
-        next(new errCodeNotFound('Запрашиваемый пользователь не найден.'));
+        next(new errCodeNotFound('Пользователь с указанным _id не найден.'));
         return;
       }
 
@@ -25,7 +25,7 @@ module.exports.getUserId = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new errCodeIncorrectData('Пользователь с указанным _id не найден.'));
+        next(new errCodeIncorrectData('Указан недопустимый _id пользователя.'));
         return;
       }
 
@@ -79,7 +79,7 @@ module.exports.updateProfile = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (user === null) {
-        next(new errCodeNotFound('Запрашиваемый пользователь не найден.'));
+        next(new errCodeNotFound('Пользователь с указанным _id не найден.'));
         return;
       }
 
@@ -101,7 +101,7 @@ module.exports.updateAvatar = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       if (user === null) {
-        next(new errCodeNotFound('Запрашиваемый пользователь не найден.'));
+        next(new errCodeNotFound('Пользователь с указанным _id не найден.'));
         return;
       }
 

@@ -39,11 +39,11 @@ module.exports.deleteCard = (req, res, next) => {
         return;
       }
 
-      card.deleteOne().then((item) => res.send({ item }));
+      return card.deleteOne().then((item) => res.send({ item }));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new errCodeIncorrectData('Карточка с указанным _id не найдена.'));
+        next(new errCodeIncorrectData('Указан недопустимый _id карточки.'));
         return;
       }
 
@@ -62,7 +62,7 @@ module.exports.setLike = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new errCodeIncorrectData('Карточка с указанным _id не найдена.'));
+        next(new errCodeIncorrectData('Указан недопустимый _id карточки.'));
         return;
       }
 
@@ -82,7 +82,7 @@ module.exports.deleteLike = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new errCodeIncorrectData('Карточка с указанным _id не найдена.'));
+        next(new errCodeIncorrectData('Указан недопустимый _id карточки.'));
         return;
       }
 
