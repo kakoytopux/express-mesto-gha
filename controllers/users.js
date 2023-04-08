@@ -77,13 +77,13 @@ module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
-    .then((user) => {
-      if (user === null) {
+    .then((data) => {
+      if (data === null) {
         next(new errCodeNotFound('Пользователь с указанным _id не найден.'));
         return;
       }
 
-      res.send({ user });
+      res.send({ data });
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
@@ -99,13 +99,13 @@ module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-    .then((user) => {
-      if (user === null) {
+    .then((data) => {
+      if (data === null) {
         next(new errCodeNotFound('Пользователь с указанным _id не найден.'));
         return;
       }
 
-      res.send({ user });
+      res.send({ data });
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
