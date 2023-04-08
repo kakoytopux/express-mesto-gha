@@ -15,13 +15,13 @@ module.exports.getUsers = (req, res, next) => {
 
 module.exports.getUserId = (req, res, next) => {
   User.findById(req.params.userId)
-    .then((user) => {
-      if (user === null) {
+    .then((data) => {
+      if (data === null) {
         next(new errCodeNotFound('Пользователь с указанным _id не найден.'));
         return;
       }
 
-      res.send({ data: user });
+      res.send({ data });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -35,7 +35,7 @@ module.exports.getUserId = (req, res, next) => {
 
 module.exports.getUserMe = (req, res, next) => {
   User.findById(req.user._id)
-    .then((user) => res.send({ data: user }))
+    .then((data) => res.send({ data }))
     .catch(() => next(errByDefault()));
 };
 
