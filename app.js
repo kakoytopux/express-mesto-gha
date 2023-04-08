@@ -15,8 +15,26 @@ app.use(express.json());
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
+const defaultMethods = 'GET, HEAD, PUT, PATCH, POST, DELETE';
+const allowedCors = [
+  'https://mestodd.nomoredomains.monster',
+  'http://mestodd.nomoredomains.monster',
+];
+
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
+  const requestHeaders = req.headers['access-control-request-headers'];
+  const { method } = req;
+  const { origin } = req.headers;
+
+  if (allowedCors.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  if (method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Methods', defaultMethods);
+    res.header('Access-Control-Allow-Headers', requestHeaders);
+
+    return res.end();
+  }
 
   next();
 });
