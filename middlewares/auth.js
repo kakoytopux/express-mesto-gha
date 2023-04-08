@@ -11,9 +11,10 @@ module.exports = (req, res, next) => {
 
   const token = authorization.replace('Bearer ', '');
   let payload;
+  const { NODE_ENV, JWT_SECRET } = process.env;
 
   try {
-    payload = jwt.verify(token, 'a71e243eebaec3567de07798fac7b128d837ee48bdbfa1fc03ddb6f867f6b37d');
+    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret-key');
   } catch (err) {
     next(new errCodeUnauthorized('Для продолжения необходимо пройти авторизацию.'));
     return;
