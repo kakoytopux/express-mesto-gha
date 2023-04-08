@@ -48,14 +48,14 @@ module.exports.createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((data) => {
+    .then((user) => {
       const {
         // eslint-disable-next-line no-shadow
         name, about, avatar, email, _id,
-      } = data;
+      } = user;
 
       res.send({
-        data: {
+        user: {
           name, about, avatar, email, _id,
         },
       });
