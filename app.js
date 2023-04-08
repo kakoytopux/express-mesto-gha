@@ -15,6 +15,12 @@ app.use(express.json());
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+
+  next();
+});
+
 app.use(requestLogger);
 
 app.post('/signin', celebrate({
