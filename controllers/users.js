@@ -80,7 +80,14 @@ module.exports.updateProfile = (req, res, next) => {
 
       res.send({ data });
     })
-    .catch(() => next(errByDefault()));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new errCodeIncorrectData('Переданы некорректные данные при обновлении профиля.'));
+        return;
+      }
+
+      next(errByDefault());
+    });
 };
 
 module.exports.updateAvatar = (req, res, next) => {
@@ -95,5 +102,12 @@ module.exports.updateAvatar = (req, res, next) => {
 
       res.send({ data });
     })
-    .catch(() => next(errByDefault()));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new errCodeIncorrectData('Переданы некорректные данные при обновлении аватара.'));
+        return;
+      }
+
+      next(errByDefault());
+    });
 };
