@@ -8,7 +8,7 @@ const { statusCodeCreate } = require('../utils/const');
 const errByDefault = () => new errCodeMain('Внутренняя ошибка!');
 
 module.exports.getCards = (req, res, next) => {
-  Card.find().populate('owner')
+  Card.find().populate(['likes', 'owner'])
     .then((cards) => res.send({ cards }))
     .catch(() => next(errByDefault()));
 };
