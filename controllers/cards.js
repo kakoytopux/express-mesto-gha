@@ -57,7 +57,7 @@ module.exports.setLike = (req, res, next) => {
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
-  ).populate('likes')
+  ).populate(['likes', 'owner'])
     .then((card) => {
       if (card === null) {
         next(new errCodeNotFound('Передан несуществующий _id карточки.'));
@@ -80,7 +80,7 @@ module.exports.deleteLike = (req, res, next) => {
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
-  ).populate('likes')
+  ).populate(['likes', 'owner'])
     .then((card) => {
       if (card === null) {
         next(new errCodeNotFound('Передан несуществующий _id карточки.'));
