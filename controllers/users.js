@@ -4,6 +4,7 @@ const errCodeNotFound = require('../errors/errCodeNotFound');
 const errCodeIncorrectData = require('../errors/errCodeIncorrectData');
 const errCodeMain = require('../errors/errCodeMain');
 const errCodeConflict = require('../errors/errCodeConflict');
+const { statusCodeCreate } = require('../utils/const');
 
 const errByDefault = () => new errCodeMain('Внутренняя ошибка!');
 
@@ -49,16 +50,10 @@ module.exports.createUser = (req, res, next) => {
       name, about, avatar, email, password: hash,
     }))
     .then((user) => {
-      const {
-        // eslint-disable-next-line no-shadow
-        name, about, avatar, email, _id,
-      } = user;
+      const objUserInfo = user.toObject();
+      delete objUserInfo.password;
 
-      res.send({
-        user: {
-          name, about, avatar, email, _id,
-        },
-      });
+      res.status(statusCodeCreate).send({ objUserInfo });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -85,14 +80,7 @@ module.exports.updateProfile = (req, res, next) => {
 
       res.send({ data });
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new errCodeIncorrectData('Переданы некорректные данные при обновлении профиля.'));
-        return;
-      }
-
-      next(errByDefault());
-    });
+    .catch(() => next(errByDefault()));
 };
 
 module.exports.updateAvatar = (req, res, next) => {
@@ -107,12 +95,5 @@ module.exports.updateAvatar = (req, res, next) => {
 
       res.send({ data });
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new errCodeIncorrectData('Переданы некорректные данные при обновлении аватара.'));
-        return;
-      }
-
-      next(errByDefault());
-    });
+    .catch(() => next(errByDefault()));
 };

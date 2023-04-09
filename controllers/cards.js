@@ -3,11 +3,12 @@ const errCodeNotFound = require('../errors/errCodeNotFound');
 const errCodeIncorrectData = require('../errors/errCodeIncorrectData');
 const errCodeMain = require('../errors/errCodeMain');
 const errCodeForbidden = require('../errors/errCodeForbidden');
+const { statusCodeCreate } = require('../utils/const');
 
 const errByDefault = () => new errCodeMain('Внутренняя ошибка!');
 
 module.exports.getCards = (req, res, next) => {
-  Card.find()
+  Card.find().populate('owner')
     .then((cards) => res.send({ cards }))
     .catch(() => next(errByDefault()));
 };
@@ -16,7 +17,7 @@ module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.send({ card }))
+    .then((card) => res.status(statusCodeCreate).send({ card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new errCodeIncorrectData('Переданы некорректные данные при создании карточки.'));
@@ -52,7 +53,11 @@ module.exports.deleteCard = (req, res, next) => {
 };
 
 module.exports.setLike = (req, res, next) => {
-  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true },
+  ).populate('likes')
     .then((card) => {
       if (card === null) {
         next(new errCodeNotFound('Передан несуществующий _id карточки.'));
@@ -71,7 +76,11 @@ module.exports.setLike = (req, res, next) => {
 };
 
 module.exports.deleteLike = (req, res, next) => {
-  Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $pull: { likes: req.user._id } },
+    { new: true },
+  ).populate('likes')
     .then((card) => {
       if (card === null) {
         next(new errCodeNotFound('Передан несуществующий _id карточки.'));

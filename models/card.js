@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { regularExpression } = require('../utils/const');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -12,7 +13,7 @@ const cardSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(link) {
-        return /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9--._~:/?#@!$&'()*+,;=+.~#?&/=]*)$/.test(link);
+        return regularExpression.test(link);
       },
     },
   },
@@ -24,6 +25,7 @@ const cardSchema = new mongoose.Schema({
   likes: {
     type: [mongoose.Schema.Types.ObjectId],
     default: [],
+    ref: 'user',
   },
   createAt: {
     type: Date,
